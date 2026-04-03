@@ -41,6 +41,18 @@ void writeCol(std::ofstream& out, const vec& col) {
     out << rByte << ' ' << gByte << ' ' << bByte << '\n';
 }
 
+using complex = std::complex<double>;
+
+vec computeMandelbrot(vec pos, int maxItr, int escpae) {
+    complex c(pos[0], pos[1]);
+    complex z(0, 0);
+
+    for (int i=0; i < maxItr; i++) {
+        z = z*z + c;
+    }
+    return vec(z.real(), z.imag());
+}
+
 void render() {
     std::ofstream file("output.ppm");
     int width = 400;
@@ -56,10 +68,12 @@ void render() {
             
             vec pixCoord = {double(i), double(j)};
             vec uv = {pixCoord[0] / width, pixCoord[1] / height};
-            uv = addVec(multVec(uv, 2.0), vec{-1.0, -1.0});
-            uv[0] *= aspect;
+            //uv = addVec(multVec(uv, s2.0), vec{-1.0, -1.0});
+            //uv[0] *= aspect;
             
-            vec pixCol = {0, 0, 0};
+            vec mandelbrot = computeMandelbrot(uv, 100, 10);
+            
+            vec pixCol = {mandelbrot[0], mandelbrot[1], 0};
 
             writeCol(file, pixCol);
         }
